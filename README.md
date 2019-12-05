@@ -45,6 +45,6 @@ GNU General Public License
 
 [3]: Wang, H., Yushkevich, P.A., 2013. Multi-atlas segmentation with joint label fusion and corrective learning—an open source implementation. Front. Neuroinform. 7, 27. https://doi.org/10.3389/fninf.2013.00027
 
-[4]: http://stnava.github.io/ANTs/
+[4]: ANTs. http://stnava.github.io/ANTs/
 
-[5]: http://www.math.mcgill.ca/keith/surfstat/
+[5]: Surfstat. http://www.math.mcgill.ca/keith/surfstat/
