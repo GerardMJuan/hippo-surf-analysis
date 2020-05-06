@@ -8,23 +8,19 @@ addpath('../../surfstat/')
 addpath('../../utils/')
 set(groot,'defaultFigureVisible','off')
 
-%% folders where meshes are located
+%% 1. Load the data paths and covariates
 meshes_l = "";
 meshes_r = "";
-
-%Csv with the information of the meshes
 csv = "";
 
-% Path of the average, in .obj format
-avg_l_path = '';
-avg_r_path = '';
-% Path of the average, in .vtk format
-avg_l_vtk = '';
-avg_r_vtk = '';
+avg_l_path = "";
+avg_r_path = "";
+avg_l_vtk = "";
+avg_r_vtk = "";
 
-% Base exp to store the results
-exp_dir_base = '';
+exp_dir_base = "";
 mkdir(exp_dir_base);
+
 
 data = readtable(csv);
 % Number of subjects
@@ -49,16 +45,16 @@ t_ravg=kron(t_ravg,ones(N,1));
 t_ravg=reshape(t_ravg,N,2636,3);
 t_r = t_r - t_ravg;
 
-model_l = 1 + Age + Agesq + Gender + Site + Apoe + DX + Age*Apoe + Agesq*Apoe;
-model_r = 1 + Age + Agesq + Gender + Site + Apoe + DX + Age*Apoe + Agesq*Apoe;
+model_l = 1 + Age + Agesq + Gender + Site + Volume_l + Apoe + DX + Age*Apoe + Yed;
+model_r = 1 + Age + Agesq + Gender + Site + Volume_r + Apoe + DX + Age*Apoe + Yed;
 
 slm_l = SurfStatLinMod(t_l, model_l, avg_l);
 slm_r = SurfStatLinMod(t_r, model_r, avg_r);
 
 
 % ADDITIVE
-model_r_add = 1 + Age + Gender + Site + Apoe_int + DX_int +Apoe_int*DX_int + Apoe_intsq*DX_int;
-model_l_add = 1 + Age + Gender + Site + Apoe_int + DX_int +Apoe_int*DX_int + Apoe_intsq*DX_int;
+model_r_add = 1 + Age + Gender + Site + Volume_r + Apoe_int + DX_int +Apoe_int*DX_int + Yed;
+model_l_add = 1 + Age + Gender + Site + Volume_l + Apoe_int + DX_int +Apoe_int*DX_int + Yed;
 slm_l_add = SurfStatLinMod(t_l, model_l_add, avg_l);
 slm_r_add = SurfStatLinMod(t_r, model_r_add, avg_r);
 
@@ -84,8 +80,9 @@ corr_int = [1 2 3 4];
 
 % NO INTERACTIONS
 % List of contrasts
-contrast_list = {-age, age, -agesq, agesq, site, -site,...
-                 Gender.Male-Gender.Female, Gender.Female-Gender.Male,...%-volume_l, volume_l,...
+contrast_list = {-age, age, -agesq, agesq, site, -site, yed, -yed,...
+                 Gender.Male-Gender.Female, Gender.Female-Gender.Male,...
+                 -volume_l, volume_l,...
                  Apoe.HE-Apoe.NC, Apoe.NC-Apoe.HE,...
                  Apoe.HO-Apoe.NC, Apoe.NC-Apoe.HO,...
                  Apoe.HE-Apoe.HO, Apoe.HO-Apoe.HE,...
@@ -101,8 +98,8 @@ contrast_list = {-age, age, -agesq, agesq, site, -site,...
                  };
 
 % List of files to save
-save_file = {'-age', '+age', '-agesq', 'agesq', 'site', '-site'...
-             '+male_-female', '+female_-male',...% '-volume', '+volume',...
+save_file = {'-age', '+age', '-agesq', 'agesq', 'site', '-site', 'yed', '-yed',...
+             '+male_-female', '+female_-male', '-volume', '+volume',...
              '+HE_-NC', '+NC_-HE', '+HO_-NC', '+NC_-HO', '+HO_-HE',...  
              '+HE_-HO', 'HE+NC-HO', '-HE-NC+HO', 'HE+HO-NC', '-HE-HO+NC',...
              '+AD-CN','-AD+CN','+MCI-CN','+CN-LMCI','+AD-MCI','-AD+MCI',...
@@ -118,13 +115,13 @@ save_exp_to_disk(contrast_list,save_file,exp_dir,avg_l,slm_l,avg_l_vtk, t_l, apo
 % INTERACTIONS TIME
 % ONLY ADDITIVE
 % ADDITIVE
-contrast_list_int_add = {apoe_int.*dx_int, -apoe_int.*dx_int, apoe_intsq.*dx_int, -apoe_intsq.*dx_int};
-save_file_int_add = {'apoeDX', '-apoeDX', 'apoesqDX', '-apoesqDX'};
+contrast_list_int_add = {apoe_int.*dx_int, -apoe_int.*dx_int};
+save_file_int_add = {'apoeDX', '-apoeDX'};
 
 % HACK FINS QUE HAGI CORREGIT EL GRAFIC PER AQUEST CAS
 corr_int = [];
 % output_dir
-exp_dir = strcat(exp_dir_base, 'lefthippo_ageapoe/');
+exp_dir = strcat(exp_dir_base, 'lefthippo_dxapoe/');
 mkdir(exp_dir);
 
 % % Call save function
@@ -134,9 +131,9 @@ save_exp_to_disk(contrast_list_int_add,save_file_int_add,exp_dir,avg_l,slm_l_add
 
 % NO INTERACTIONS
 % List of contrasts
-contrast_list = {-age, age, -agesq, agesq...
-                 Gender.Male-Gender.Female, Gender.Female-Gender.Male,...% -volume_r, volume_r, 
-                 site, -site...
+contrast_list = {-age, age, -agesq, agesq, site, -site, yed, -yed,...
+                 Gender.Male-Gender.Female, Gender.Female-Gender.Male,...
+                 -volume_r, volume_r...
                  Apoe.HE-Apoe.NC, Apoe.NC-Apoe.HE,...
                  Apoe.HO-Apoe.NC, Apoe.NC-Apoe.HO,...
                  Apoe.HE-Apoe.HO, Apoe.HO-Apoe.HE,...
@@ -161,7 +158,7 @@ save_exp_to_disk(contrast_list,save_file,exp_dir,avg_r,slm_r,avg_r_vtk, t_r, apo
 % INTERACTIONS TIME
 
 % output_dir
-exp_dir = strcat(exp_dir_base, 'righthippo_ageapoe/');
+exp_dir = strcat(exp_dir_base, 'righthippo_dxapoe/');
 mkdir(exp_dir);
 
 % % Call save function

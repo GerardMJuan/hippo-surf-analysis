@@ -50,15 +50,15 @@ t_ravg=kron(t_ravg,ones(N,1));
 t_ravg=reshape(t_ravg,N,2636,3);
 t_r = t_r - t_ravg;
 
-model_r = 1 + Age + Agesq + Gender + Site + Volume_r + Apoe + Age*Apoe + Agesq*Apoe;
-model_l = 1 + Age + Agesq + Gender + Site + Volume_l + Apoe + Age*Apoe + Agesq*Apoe;
+model_r = 1 + Age + Agesq + Gender + Site + Apoe + Age*Apoe + Agesq*Apoe;
+model_l = 1 + Age + Agesq + Gender + Site + Apoe + Age*Apoe + Agesq*Apoe;
 
 slm_l = SurfStatLinMod(t_l, model_l, avg_l);
 slm_r = SurfStatLinMod(t_r, model_r, avg_r);
 
 % ADDITIVE
-model_r_add = 1 + Age + Agesq + Gender + Site + Volume_r + Apoe_int + Age*Apoe_int + Agesq*Apoe_int;
-model_l_add = 1 + Age + Agesq + Gender + Site + Volume_l + Apoe_int + Age*Apoe_int + Agesq*Apoe_int;
+model_r_add = 1 + Age + Agesq + Gender + Site + Apoe_int + Age*Apoe_int + Agesq*Apoe_int;
+model_l_add = 1 + Age + Agesq + Gender + Site + Apoe_int + Age*Apoe_int + Agesq*Apoe_int;
 
 slm_l_add = SurfStatLinMod(t_l, model_l_add, avg_l);
 slm_r_add = SurfStatLinMod(t_r, model_r_add, avg_r);
@@ -71,8 +71,8 @@ slm_r_add = SurfStatLinMod(t_r, model_r_add, avg_r);
 % for the additive part, is different, as we only have a covariate.
 
 % CONFIRMAR
-corr = [1 4 5 6 7];
-corr_int = [1 4 5 6 7];
+corr = [1 4 5 6];
+corr_int = [1 4 5 6];
 
 %% Save uncorrected tests to disk
 % Save, for each contrast:
@@ -82,7 +82,7 @@ corr_int = [1 4 5 6 7];
 
 %% Left
 
-contrast_list = {-age, age, -agesq, agesq, volume_l, -volume_l,...
+contrast_list = {-age, age, -agesq, agesq,...% volume_l, -volume_l,...
                  Gender.Male-Gender.Female, Gender.Female-Gender.Male,...
                  site, -site,...
                  Apoe.HE-Apoe.NC, Apoe.NC-Apoe.HE,...
@@ -94,7 +94,7 @@ contrast_list = {-age, age, -agesq, agesq, volume_l, -volume_l,...
                  Apoe.NC - (0.5*Apoe.HE+0.5*Apoe.HO)};
     
 % List of files to save
-save_file = {'-age', '+age', '-agesq', 'agesq', '+volume', '-volume',...
+save_file = {'-age', '+age', '-agesq', 'agesq',...% '+volume', '-volume',...
              'site','-site',...
              '+male_-female', '+female_-male',... % '-yed', 'yed',...
              '+HE_-NC', '+NC_-HE', '+HO_-NC', '+NC_-HO', '+HO_-HE',...  
@@ -159,7 +159,7 @@ save_exp_to_disk(contrast_list_int_add,save_file_int_add,exp_dir,avg_l,slm_l_add
 
 
 % List of contrasts
-contrast_list = {-age, age, -agesq, agesq, volume_r, -volume_r,...
+contrast_list = {-age, age, -agesq, agesq,...% volume_r, -volume_r,...
                  site, -site,...
                  Gender.Male-Gender.Female, Gender.Female-Gender.Male,...
                  Apoe.HE-Apoe.NC, Apoe.NC-Apoe.HE,...

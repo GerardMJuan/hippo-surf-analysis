@@ -4,26 +4,21 @@
 global MAXMEM; MAXMEM=4096;
 clear all
 close all
-addpath('surfstat/')
-addpath('utils/')
+addpath('../../surfstat/')
+addpath('../../utils/')
 set(groot,'defaultFigureVisible','off')
 
-%% folders where meshes are located
+%% 1. Load the data paths and covariates
 meshes_l = "";
 meshes_r = "";
-
-%Csv with the information of the meshes
 csv = "";
 
-% Path of the average, in .obj format
-avg_l_path = '';
-avg_r_path = '';
-% Path of the average, in .vtk format
-avg_l_vtk = '';
-avg_r_vtk = '';
+avg_l_path = "";
+avg_r_path = "";
+avg_l_vtk = "";
+avg_r_vtk = "";
 
-% Base exp to store the results
-exp_dir_base = '';
+exp_dir_base = "";
 mkdir(exp_dir_base);
 
 data = readtable(csv);
@@ -31,8 +26,7 @@ data = readtable(csv);
 N = size(data,1);
 
 %% Load covariates
-Data_loading_ADNI;
-
+Data_loading_all;
 
 %% Models
 % Left hippocampus
@@ -84,8 +78,8 @@ corr_int = [];
 
 % NO INTERACTIONS
 % List of contrasts
-contrast_list = {-age, age, site, -site,...
-                 Gender.Male-Gender.Female, Gender.Female-Gender.Male,...
+contrast_list = {-age, age, site, -site, yed, -yed,...
+                 Gender.M-Gender.F, Gender.F-Gender.M,...%-volume_l, volume_l,...
                  Apoe.HE-Apoe.NC, Apoe.NC-Apoe.HE,...
                  Apoe.HO-Apoe.NC, Apoe.NC-Apoe.HO,...
                  Apoe.HE-Apoe.HO, Apoe.HO-Apoe.HE,...
@@ -102,8 +96,8 @@ contrast_list = {-age, age, site, -site,...
 
 
 % List of files to save
-save_file = {'-age', '+age', 'site', '-site',...
-             '+male_-female', '+female_-male',...
+save_file = {'-age', '+age', 'site', '-site', 'yed', '-yed',...
+             '+male_-female', '+female_-male',...% '-volume', '+volume',...
              '+HE_-NC', '+NC_-HE', '+HO_-NC', '+NC_-HO', '+HO_-HE',...  
              '+HE_-HO', 'HE+NC-HO', '-HE-NC+HO', 'HE+HO-NC', '-HE-HO+NC',...
              '+AD-CN','-AD+CN','+MCI-CN','+CN-LMCI','+AD-MCI','-AD+MCI',...
@@ -131,8 +125,8 @@ save_exp_to_disk(contrast_list_add,save_file_add,exp_dir,avg_l,slm_l_add,avg_l_v
 
 % List of contrasts
 
-contrast_list = {-age, age, site, -site,...
-                 Gender.Male-Gender.Female, Gender.Female-Gender.Male,...
+contrast_list = {-age, age, site, -site, yed, -yed,...
+                 Gender.M-Gender.F, Gender.F-Gender.M,...%  -volume_r, volume_r,...
                  Apoe.HE-Apoe.NC, Apoe.NC-Apoe.HE,...
                  Apoe.HO-Apoe.NC, Apoe.NC-Apoe.HO,...
                  Apoe.HE-Apoe.HO, Apoe.HO-Apoe.HE,...

@@ -19,7 +19,7 @@ Languages used are Python and MATLAB. Preprocessing of the data is based on ANTS
 
 ## Description of the directories
 * datasets/ Contains scripts to explore the different datasets and meshes used in this work, as well as preprocessing and preparing of the meshes to work with the analysis pipeline. Organized in different folders according to the dataset.
-* experiments/ Files to run the different experiments. MATLAB code. Organized in different folders according to the dataset. Each experiment has a separate .m file.
+* experiments/ Files to run the different experiments. MATLAB and Python code. Organized in different folders according to the dataset. Each experiment has a separate .m file.
 * surfstat/ Surfstat library[5]
 * utils/ contains functions that are shared and usable in all experiments, like data preparation, visualization or testing.
 

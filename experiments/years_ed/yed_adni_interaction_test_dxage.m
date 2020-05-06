@@ -4,26 +4,21 @@
 global MAXMEM; MAXMEM=4096;
 clear all
 close all
-addpath('surfstat/')
-addpath('utils/')
+addpath('../surfstat/')
+addpath('../utils/')
 set(groot,'defaultFigureVisible','off')
 
-%% folders where meshes are located
+%% 1. Load the data paths and covariates
 meshes_l = "";
 meshes_r = "";
-
-%Csv with the information of the meshes
 csv = "";
 
-% Path of the average, in .obj format
-avg_l_path = '';
-avg_r_path = '';
-% Path of the average, in .vtk format
-avg_l_vtk = '';
-avg_r_vtk = '';
+avg_l_path = "";
+avg_r_path = "";
+avg_l_vtk = "";
+avg_r_vtk = "";
 
-% Base exp to store the results
-exp_dir_base = '';
+exp_dir_base = "";
 mkdir(exp_dir_base);
 
 data = readtable(csv);
@@ -48,15 +43,15 @@ t_ravg=kron(t_ravg,ones(N,1));
 t_ravg=reshape(t_ravg,N,2636,3);
 t_r = t_r - t_ravg;
 
-model_l = 1 + Age + Agesq + Gender + Site + Apoe + DX + Age*Apoe + Agesq*Apoe;
-model_r = 1 + Age + Agesq + Gender + Site + Apoe + DX + Age*Apoe + Agesq*Apoe;
+model_l = 1 + Age + Agesq + Gender + Site + DX + Apoe + Yed + Age*DX + Agesq*DX;
+model_r = 1 + Age + Agesq + Gender + Site + DX + Apoe + Yed + Age*DX + Agesq*DX;
 
 slm_l = SurfStatLinMod(t_l, model_l, avg_l);
 slm_r = SurfStatLinMod(t_r, model_r, avg_r);
 
 % ADDITIVE
-model_r_add = 1 + Age + Agesq + Gender + Site + Apoe_int + DX_int + Age*Apoe_int + Agesq*Apoe_int;
-model_l_add = 1 + Age + Agesq + Gender + Site + Apoe_int + DX_int + Age*Apoe_int + Agesq*Apoe_int;
+model_r_add = 1 + Age + Agesq + Gender + Site + DX_int + Yed + Apoe_int + Age*DX_int + Agesq*DX_int;
+model_l_add = 1 + Age + Agesq + Gender + Site + DX_int + Yed + Apoe_int + Age*DX_int + Agesq*DX_int;
 
 slm_l_add = SurfStatLinMod(t_l, model_l_add, avg_l);
 slm_r_add = SurfStatLinMod(t_r, model_r_add, avg_r);
@@ -69,11 +64,8 @@ slm_r_add = SurfStatLinMod(t_r, model_r_add, avg_r);
 % for the additive part, is different, as we only have a covariate.
 
 % CONFIRMAR
-corr = [1 4 5 6 7 11 12 13];
-corr_int = [1 4 5 6 7 9];
-
-% corr = [1 4 5 9 10 11];
-% corr_int = [1 4 5 7];
+corr = [1 4 5 6 10 11 12 13];
+corr_int = [1 4 5 6 8 9];
 
 
 %% Save uncorrected tests to disk
@@ -86,8 +78,8 @@ corr_int = [1 4 5 6 7 9];
 
 % NO INTERACTIONS
 % List of contrasts
-contrast_list = {-age, age, -agesq, agesq, site, -site,...
-                 Gender.Male-Gender.Female, Gender.Female-Gender.Male,...
+contrast_list = {-age, age, -agesq, agesq, site, -site, yed, -yed,...
+                 Gender.Male-Gender.Female, Gender.Female-Gender.Male,...%-volume_l, volume_l,...
                  Apoe.HE-Apoe.NC, Apoe.NC-Apoe.HE,...
                  Apoe.HO-Apoe.NC, Apoe.NC-Apoe.HO,...
                  Apoe.HE-Apoe.HO, Apoe.HO-Apoe.HE,...
@@ -103,8 +95,8 @@ contrast_list = {-age, age, -agesq, agesq, site, -site,...
                  };
 
 % List of files to save
-save_file = {'-age', '+age', '-agesq', 'agesq', 'site', '-site',...
-             '+male_-female', '+female_-male',...
+save_file = {'-age', '+age', '-agesq', 'agesq', 'site', '-site', 'yed', '-yed',...
+             '+male_-female', '+female_-male',...% '-volume', '+volume',...
              '+HE_-NC', '+NC_-HE', '+HO_-NC', '+NC_-HO', '+HO_-HE',...  
              '+HE_-HO', 'HE+NC-HO', '-HE-NC+HO', 'HE+HO-NC', '-HE-HO+NC',...
              '+AD-CN','-AD+CN','+MCI-CN','+CN-LMCI','+AD-MCI','-AD+MCI',...
@@ -115,45 +107,44 @@ save_file = {'-age', '+age', '-agesq', 'agesq', 'site', '-site',...
 contrast_list_add = {apoe_int, -apoe_int, dx_int, -dx_int};
 save_file_add = {'NC_HE_HO', '-NC_HE_HO', 'AD_MCI_CN', '-AD_MCI_CN'};
 
-
 %% Left
 % output_dir
 exp_dir = strcat(exp_dir_base, 'lefthippo/');
 mkdir(exp_dir);
 
-save_exp_to_disk(contrast_list,save_file,exp_dir,avg_l,slm_l,avg_l_vtk, t_l, age, apoe, corr)
+save_exp_to_disk(contrast_list,save_file,exp_dir,avg_l,slm_l,avg_l_vtk, t_l, age, dx, corr)
 
 % ADDITIVE MODEL
-save_exp_to_disk(contrast_list_add,save_file_add,exp_dir,avg_l,slm_l_add,avg_l_vtk, t_l, age, apoe, corr_int)
+save_exp_to_disk(contrast_list_add,save_file_add,exp_dir,avg_l,slm_l_add,avg_l_vtk, t_l, age, dx, corr_int)
 
 
 %% INTERACTIONS TIME
 
-contrast_list_int = {age.*Apoe.HE-age.*Apoe.NC, age.*Apoe.NC-age.*Apoe.HE,...
-                 age.*Apoe.HO-age.*Apoe.NC, age.*Apoe.NC-age.*Apoe.HO,...
-                 age.*Apoe.HE-age.*Apoe.HO, age.*Apoe.HO-age.*Apoe.HE,...
-                 age.*(0.5*Apoe.HE+0.5*Apoe.NC) - age.*Apoe.HO,...
-                 age.*Apoe.HO - age.*(0.5*Apoe.HE+0.5*Apoe.NC),...
-                 age.*(0.5*Apoe.HE+0.5*Apoe.HO) - age.*Apoe.NC,...
-                 age.*Apoe.NC - age.*(0.5*Apoe.HE+0.5*Apoe.HO),...
-                 agesq.*Apoe.HE-agesq.*Apoe.NC, agesq.*Apoe.NC-agesq.*Apoe.HE,...
-                 agesq.*Apoe.HO-agesq.*Apoe.NC, agesq.*Apoe.NC-agesq.*Apoe.HO,...
-                 agesq.*Apoe.HE-agesq.*Apoe.HO, agesq.*Apoe.HO-agesq.*Apoe.HE,...
-                 agesq.*(0.5*Apoe.HE+0.5*Apoe.NC) - agesq.*Apoe.HO,...
-                 agesq.*Apoe.HO - agesq.*(0.5*Apoe.HE+0.5*Apoe.NC),...
-                 agesq.*(0.5*Apoe.HE+0.5*Apoe.HO) - agesq.*Apoe.NC,...
-                 agesq.*Apoe.NC - agesq.*(0.5*Apoe.HE+0.5*Apoe.HO)};
+contrast_list_int = {age.*DX.LMCI-age.*DX.CN, age.*DX.CN-age.*DX.LMCI,...
+                 age.*DX.AD-age.*DX.CN, age.*DX.CN-age.*DX.AD,...
+                 age.*DX.LMCI-age.*DX.AD, age.*DX.AD-age.*DX.LMCI,...
+                 age.*(0.5*DX.LMCI+0.5*DX.CN) - age.*DX.AD,...
+                 age.*DX.AD - age.*(0.5*DX.LMCI+0.5*DX.CN),...
+                 age.*(0.5*DX.LMCI+0.5*DX.AD) - age.*DX.CN,...
+                 age.*DX.CN - age.*(0.5*DX.LMCI+0.5*DX.AD),...
+                 agesq.*DX.LMCI-agesq.*DX.CN, agesq.*DX.CN-agesq.*DX.LMCI,...
+                 agesq.*DX.AD-agesq.*DX.CN, agesq.*DX.CN-agesq.*DX.AD,...
+                 agesq.*DX.LMCI-agesq.*DX.AD, agesq.*DX.AD-agesq.*DX.LMCI,...
+                 agesq.*(0.5*DX.LMCI+0.5*DX.CN) - agesq.*DX.AD,...
+                 agesq.*DX.AD - agesq.*(0.5*DX.LMCI+0.5*DX.CN),...
+                 agesq.*(0.5*DX.LMCI+0.5*DX.AD) - agesq.*DX.CN,...
+                 agesq.*DX.CN - agesq.*(0.5*DX.LMCI+0.5*DX.AD)};
     
 % List of files to save
 % 
-save_file_int = {'age+HE_-NC', 'age+NC_-HE', 'age+HO_-NC', 'age+NC_-HO', 'age+HO_-HE',...  
-             'age+HE_-HO', 'ageHE+NC-HO', 'age-HE-NC+HO', 'ageHE+HO-NC', 'age-HE-HO+NC',...
-             'agesq+HE_-NC', 'agesq+NC_-HE', 'agesq+HO_-NC', 'agesq+NC_-HO', 'agesq+HO_-HE',...  
-             'agesq+HE_-HO', 'agesqHE+NC-HO', 'agesq-HE-NC+HO', 'agesqHE+HO-NC', 'agesq-HE-HO+NC'};
+save_file_int = {'age+MCI_-CN', 'age+CN_-MCI', 'age+AD_-CN', 'age+CN_-AD', 'age+AD_-MCI',...  
+             'age+MCI_-AD', 'ageMCI+CN-AD', 'age-MCI-CN+AD', 'ageMCI+AD-CN', 'age-MCI-AD+CN',...
+             'agesq+MCI_-CN', 'agesq+CN_-MCI', 'agesq+AD_-CN', 'agesq+CN_-AD', 'agesq+AD_-MCI',...  
+             'agesq+MCI_-AD', 'agesqMCI+CN-AD', 'agesq-MCI-CN+AD', 'agesqMCI+AD-CN', 'agesq-MCI-AD+CN'};
 
 % ADDITIVE
-contrast_list_int_add = {age.*apoe_int, -age.*apoe_int, agesq.*apoe_int, -agesq.*apoe_int};
-save_file_int_add = {'ageNC_HE_HO', 'age-NC_HE_HO', 'agesqNC_HE_HO', 'agesq-NC_HE_HO'};
+contrast_list_int_add = {age.*dx_int, -age.*dx_int, agesq.*dx_int, -agesq.*dx_int};
+save_file_int_add = {'ageCN_MCI_AD', 'age-CN_MCI_AD', 'agesqCN_MCI_AD', 'agesq-CN_MCI_AD'};
 
 
 % output_dir
@@ -161,17 +152,15 @@ exp_dir = strcat(exp_dir_base, 'lefthippo_ageapoe/');
 mkdir(exp_dir);
 
 % Call save function
-save_exp_to_disk(contrast_list_int,save_file_int,exp_dir,avg_l,slm_l,avg_l_vtk, t_l, age, apoe, corr)
+save_exp_to_disk(contrast_list_int,save_file_int,exp_dir,avg_l,slm_l,avg_l_vtk, t_l, age, dx, corr)
 
 % ADDITIVE
-save_exp_to_disk(contrast_list_int_add,save_file_int_add,exp_dir,avg_l,slm_l_add,avg_l_vtk, t_l, age, apoe, corr_int)
+save_exp_to_disk(contrast_list_int_add,save_file_int_add,exp_dir,avg_l,slm_l_add,avg_l_vtk, t_l, age, dx, corr_int)
 
 %% Right
 
-% NO INTERACTIONS
-% List of contrasts
-contrast_list = {-age, age, -agesq, agesq, site, -site,...
-                 Gender.Male-Gender.Female, Gender.Female-Gender.Male,...
+contrast_list = {-age, age, -agesq, agesq, site, -site, yed, -yed,...
+                 Gender.Male-Gender.Female, Gender.Female-Gender.Male,...% -volume_r, volume_r,...
                  Apoe.HE-Apoe.NC, Apoe.NC-Apoe.HE,...
                  Apoe.HO-Apoe.NC, Apoe.NC-Apoe.HO,...
                  Apoe.HE-Apoe.HO, Apoe.HO-Apoe.HE,...
@@ -190,10 +179,10 @@ contrast_list = {-age, age, -agesq, agesq, site, -site,...
 exp_dir = strcat(exp_dir_base, 'righthippo/');
 mkdir(exp_dir);
 
-save_exp_to_disk(contrast_list,save_file,exp_dir,avg_r,slm_r,avg_r_vtk, t_r, age, apoe, corr)
+save_exp_to_disk(contrast_list,save_file,exp_dir,avg_r,slm_r,avg_r_vtk, t_r, age, dx, corr)
 
 % ADDITIVE MODEL
-save_exp_to_disk(contrast_list_add,save_file_add,exp_dir,avg_r,slm_r_add,avg_r_vtk, t_r, age, apoe, corr_int)
+save_exp_to_disk(contrast_list_add,save_file_add,exp_dir,avg_r,slm_r_add,avg_r_vtk, t_r, age, dx, corr_int)
 
 
 % Interactions time
@@ -202,8 +191,8 @@ exp_dir = strcat(exp_dir_base, 'righthippo_ageapoe/');
 mkdir(exp_dir);
 
 % Call save function
-save_exp_to_disk(contrast_list_int,save_file_int,exp_dir,avg_r,slm_r,avg_r_vtk, t_r, age, apoe, corr)
+save_exp_to_disk(contrast_list_int,save_file_int,exp_dir,avg_r,slm_r,avg_r_vtk, t_r, age, dx, corr)
 
 % ADDITIVE
-save_exp_to_disk(contrast_list_int_add,save_file_int_add,exp_dir,avg_r,slm_r_add,avg_r_vtk, t_r, age, apoe, corr_int)
+save_exp_to_disk(contrast_list_int_add,save_file_int_add,exp_dir,avg_r,slm_r_add,avg_r_vtk, t_r, age, dx, corr_int)
 

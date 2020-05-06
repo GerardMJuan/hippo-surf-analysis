@@ -1,5 +1,6 @@
 # %% Create interaction figure
 # Create interaction graphics between age (or any other covariate) and effect. This function is supposed to be called from matlab.
+# WARNING: DIRTY
 import numpy as np
 import sys
 import pandas as pd
@@ -10,20 +11,18 @@ import matplotlib.pyplot as plt
 
 csv_mesh = sys.argv[1]
 out_path = sys.argv[2]
+#To recenter data again
 # mean_age = float(sys.argv[3])
 mean_age = 57.6639
 
-# El csv contindrà primera columna eix y, seona eix x, tercera es data
 values = pd.read_csv(csv_mesh, header=None)
 values.columns = ["Y (Adj)", "Age", "Apoe", "LinMod"]
 
-# Here i had -abs() and I do not really understand why lamaO
 values["Y (Adj)"] = abs(values["Y (Adj)"])
 values["Age"] = values["Age"]# + mean_age
 
 #print(values["Y"])
 
-#  Això està malament: En teoria tinc un LinMod per cada una de les interaccions.
 # Així que he de guardar-ne 3 i carregar-les.
 
 params = values.LinMod.values

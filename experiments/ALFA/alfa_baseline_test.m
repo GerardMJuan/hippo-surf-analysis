@@ -53,7 +53,7 @@ t_ravg=reshape(t_ravg,N,2636,3);
 t_r = t_r - t_ravg;
 
 model_l = 1 + Age + Volume_l + Gender + Apoe + Yed;
-model_r = 1 + Age + Volume_r + Gender + Apoe+ Yed;
+model_r = 1 + Age + Volume_r + Gender + Apoe + Yed;
 
 slm_l = SurfStatLinMod(t_l, model_l, avg_l);
 slm_r = SurfStatLinMod(t_r, model_r, avg_r);
