@@ -11,3 +11,4 @@ Explanation of the different files in this directory. For all the scripts to wor
 * *adni_preprocessing_onlyCN.py*: use only the cognitively healthy subjects.
 * *adni_preprocessing_young.py*: Use only young subjects.
 * *adni_preprocessing.py*: Use all subjects of the cohort.
+* *adni_apoe_risk.py*: Add a column to the data with the APOE OR risk.

@@ -9,3 +9,4 @@ Explanation of the different files in this directory. For all the scripts to wor
 **Processing of the meshes:** These scripts process and extract the meshes, separate to left and right, apply Procustes analysis and saves the resulting meshes. Depending on the subset of the cohort used, we use different scripts: 
 
 * *mesh_processing.py*
+* *add_apoe_risk.py* same as in the ADNI case, add the APOE risk to the csv.

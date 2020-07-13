@@ -95,6 +95,10 @@ df_total = df_total[["PID", "gender", "age", "education_years", "APOE_e4_num", "
 df_total["SITE"] = df_total["SITE"].astype('category')
 df_total["SITE_cat"] = df_total["SITE"].cat.codes
 
+codes, uniques = pd.factorize(df_total["SITE"])
+df_total["SITE"] = codes
+
+
 df_total.to_csv(out_csv, index=False, index_label=False)
 
 # auxiliary function to not repeat code
