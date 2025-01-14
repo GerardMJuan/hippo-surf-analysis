@@ -7,7 +7,7 @@
 
 ![Abstract highlight](highlights.png "Abstract highlight")
 
-The ε4 allele of the gene Apolipoprotein E (APOE) is known to be a major genetic risk factor for Alzheimer's Disease (AD) [1]. APOE has been associated with changes in brain structure in people at advanced stages of the disease. However, it has been hypothezised that it can also affect subjects with no symptoms [2]. Such changes could be very subtle and difficult to detect. We studied possible subtle changes on the shape of the hippocampus, a brain structure that is early affected by the pathology. The code in this repository is associated to a research article currently in submission, called "Non-linear interaction betwen APOE ε4 allele load and age in the hippocampal surface of cognitively healthy subjects".
+The ε4 allele of the gene Apolipoprotein E (APOE) is known to be a major genetic risk factor for Alzheimer's Disease (AD) [1]. APOE has been associated with changes in brain structure in people at advanced stages of the disease. However, it has been hypothezised that it can also affect subjects with no symptoms [2]. Such changes could be very subtle and difficult to detect. We studied possible subtle changes on the shape of the hippocampus, a brain structure that is early affected by the pathology. The code in this repository is associated to the research article "Non-linear interaction betwen APOE ε4 allele load and age in the hippocampal surface of cognitively healthy subjects", published in Human Brain Mapping: https://onlinelibrary.wiley.com/doi/full/10.1002/hbm.25202
 
 ## How do you do this?
 
